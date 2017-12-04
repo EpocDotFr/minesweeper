@@ -1,5 +1,6 @@
 import settings
 import random
+import pygame
 import click
 
 
@@ -15,13 +16,19 @@ DIRECTIONS = (
 )
 
 
-class Area:
+class Area(pygame.sprite.Sprite):
     nearby_mines_count = 0
     cleared = False # This area has been cleared, i.e do not contain any mine
     marked = False # This area has been marked as mined
 
     def __init__(self, has_mine):
+        super(Area, self).__init__()
+
         self.has_mine = has_mine
+
+        # TODO
+        # self.image =
+        # self.rect = self.image.get_rect()
 
     @property
     def nearby_mines_count_color(self):

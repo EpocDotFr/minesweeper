@@ -30,9 +30,13 @@ class Game:
         """Load all images."""
         logging.info('Loading images')
 
-        self.images = {}
-
-        # TODO
+        self.images = {
+            'area': {
+                'cleared': [helpers.load_image('area/cleared_{}.png'.format(i)) for i in range(1, 3)],
+                'uncleared': [helpers.load_image('area/uncleared_{}.png'.format(i)) for i in range(1, 3)]
+            },
+            'mine_marker': helpers.load_image('mine_marker.png')
+        }
 
     def _start_new_game(self):
         """Start a new game."""
