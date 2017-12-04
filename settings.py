@@ -6,6 +6,12 @@ import os
 
 FPS = 30
 
+AREAS_SIDE_SIZE = 20
+
+WIDTH = 30
+HEIGHT = 16
+MINES = 99
+
 NEARBY_MINES_COUNT_COLORS = {
     1: (0, 0, 255),
     2: (0, 123, 0),

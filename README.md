@@ -38,6 +38,8 @@ This task is performed by the `build_*` scripts to be run in the corresponding O
 ## Credits
 
   - Icon by [Oliver Scholtz](https://www.iconfinder.com/icons/23906/mines_icon) (freeware)
+  - Font by [Typodermic Fonts Inc](http://www.dafont.com/coolvetica.font) (freeware)
+  - Graphics by [Kenney](https://kenney.nl/assets/topdown-tanks-redux) (CC0 1.0 Universal)
 
 ## End words
 

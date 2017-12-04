@@ -24,7 +24,8 @@ class Area:
         self.has_mine = has_mine
 
     @property
-    def text_color(self):
+    def nearby_mines_count_color(self):
+        """Return the color corresponding to the nearby mines count of this area."""
         return settings.NEARBY_MINES_COUNT_COLORS[self.nearby_mines_count] if self.nearby_mines_count in settings.NEARBY_MINES_COUNT_COLORS else None
 
 
@@ -40,10 +41,11 @@ class Field:
         if self.mines > self.areas:
             raise ValueError('Not enough space for {} mines'.format(self.mines))
 
-        self._generate()
+        self._populate()
         self._compute_nearby_mines()
 
     def mark_area_as_mined(self, x, y):
+        """Try to mark the area at the specified coordinates as mined."""
         if self.field[y][x].cleared:
             return False
 
@@ -55,6 +57,7 @@ class Field:
         return True
 
     def mark_area_as_clear(self, x, y):
+        """Try to mark the area at the specified coordinates as clear."""
         if self.field[y][x].cleared:
             return False
 
@@ -63,6 +66,7 @@ class Field:
         return True
 
     def print(self):
+        """Print the current field state to stdout."""
         for y, row in enumerate(self.field):
             click.echo('{:>2} '.format(y), nl=False)
 
@@ -82,6 +86,7 @@ class Field:
             click.echo()
 
     def _generate_areas_with_mine(self):
+        """Generate random mines position for the current field."""
         areas_with_mine = []
 
         for _ in range(0, self.mines):
@@ -95,7 +100,8 @@ class Field:
 
         return areas_with_mine
 
-    def _generate(self):
+    def _populate(self):
+        """Generate and place random mines for the current field."""
         areas_with_mine = self._generate_areas_with_mine()
         area_number = 0
 
@@ -110,6 +116,7 @@ class Field:
             self.field.append(row)
 
     def _compute_nearby_mines(self):
+        """For each area that isn't mined, compute the surrounding mined areas."""
         for y, row in enumerate(self.field):
             for x, area in enumerate(row):
                 if area.has_mine:

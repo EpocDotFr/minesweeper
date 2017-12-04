@@ -2,6 +2,7 @@ import settings
 import logging
 import helpers
 import pygame
+import field
 import sys
 
 
@@ -14,9 +15,16 @@ class Game:
         pygame.display.set_caption('Minesweeper')
         pygame.display.set_icon(helpers.load_image('icon.png'))
 
+        self._load_fonts()
         self._load_images()
 
         self._start_new_game()
+
+    def _load_fonts(self):
+        """Load the fonts."""
+        logging.info('Loading fonts')
+
+        self.nearby_mines_count_font = helpers.load_font('coolvetica.ttf', 14)
 
     def _load_images(self):
         """Load all images."""
@@ -30,7 +38,8 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        # TODO
+        self.field = field.Field(settings.WIDTH, settings.HEIGHT, settings.MINES)
+        self.field.print()
 
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
