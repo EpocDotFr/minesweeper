@@ -6,11 +6,14 @@ import os
 
 FPS = 30
 
-AREAS_SIDE_SIZE = 20
+AREAS_SIDE_SIZE = 25
 
 WIDTH = 30
 HEIGHT = 16
 MINES = 99
+
+GRID_SPACING = 1
+GRID_COLOR = (195, 195, 195)
 
 NEARBY_MINES_COUNT_COLORS = {
     1: (0, 0, 255),
@@ -33,6 +36,6 @@ SOUNDS_VOLUME = 0.3
 RESOURCES_ROOT = os.path.join(sys._MEIPASS, 'resources') if getattr(sys, 'frozen', False) else 'resources'
 
 WINDOW_SIZE = (
-    800,
-    600
+    WIDTH * AREAS_SIDE_SIZE + (WIDTH - 1) * GRID_SPACING,
+    HEIGHT * AREAS_SIDE_SIZE + (HEIGHT - 1) * GRID_SPACING
 )

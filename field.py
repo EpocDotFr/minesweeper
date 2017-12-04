@@ -21,14 +21,24 @@ class Area(pygame.sprite.Sprite):
     cleared = False # This area has been cleared, i.e do not contain any mine
     marked = False # This area has been marked as mined
 
-    def __init__(self, has_mine):
+    def __init__(self, images, has_mine):
         super(Area, self).__init__()
 
+        self.images = images
         self.has_mine = has_mine
 
-        # TODO
-        # self.image =
-        # self.rect = self.image.get_rect()
+        self._draw()
+
+    def _draw(self):
+        """Draw this area."""
+        self.image = random.choice(self.images['area']['cleared' if self.cleared else 'uncleared'])
+        self.rect = self.image.get_rect()
+
+        if self.marked:
+            marked_rect = self.images['mine_marker'].get_rect()
+            marked_rect.center = self.rect.center
+
+            self.image.blit(self.images['mine_marker'], marked_rect)
 
     @property
     def nearby_mines_count_color(self):
@@ -39,7 +49,8 @@ class Area(pygame.sprite.Sprite):
 class Field:
     field = []
 
-    def __init__(self, width, height, mines):
+    def __init__(self, images, width, height, mines):
+        self.images = images
         self.width = width
         self.height = height
         self.mines = mines
@@ -116,7 +127,7 @@ class Field:
             row = []
 
             for x in range(0, self.width):
-                row.append(Area(has_mine=area_number in areas_with_mine))
+                row.append(Area(images=self.images, has_mine=area_number in areas_with_mine))
 
                 area_number += 1
 

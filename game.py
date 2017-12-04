@@ -42,7 +42,7 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        self.field = field.Field(settings.WIDTH, settings.HEIGHT, settings.MINES)
+        self.field = field.Field(images=self.images, width=settings.WIDTH, height=settings.HEIGHT, mines=settings.MINES)
         self.field.print()
 
     def update(self):
@@ -60,7 +60,8 @@ class Game:
                     break
 
         # Drawings
-        # TODO
+        self._draw_grid()
+        self._draw_areas()
 
         # PyGame-related updates
         pygame.display.update()
@@ -81,4 +82,33 @@ class Game:
     # --------------------------------------------------------------------------
     # Drawing handlers
 
-    # TODO
+    def _draw_grid(self):
+        """Draw the grid which separates the areas."""
+        for x in range(0, settings.WIDTH + 1):
+            pygame.draw.rect(
+                self.window,
+                settings.GRID_COLOR,
+                pygame.Rect(
+                    (x * settings.AREAS_SIDE_SIZE + (x - 1) * settings.GRID_SPACING, 0),
+                    (settings.GRID_SPACING, self.window_rect.h)
+                )
+            )
+
+        for y in range(0, settings.HEIGHT + 1):
+            pygame.draw.rect(
+                self.window,
+                settings.GRID_COLOR,
+                pygame.Rect(
+                    (0, y * settings.AREAS_SIDE_SIZE + (y - 1) * settings.GRID_SPACING),
+                    (self.window_rect.w, settings.GRID_SPACING)
+                )
+            )
+
+    def _draw_areas(self):
+        """Draw the areas."""
+        for y, row in enumerate(self.field.field):
+            for x, area in enumerate(row):
+                area.rect.top = y * settings.AREAS_SIDE_SIZE + y * settings.GRID_SPACING
+                area.rect.left = x * settings.AREAS_SIDE_SIZE + x * settings.GRID_SPACING
+
+                self.window.blit(area.image, area.rect)
