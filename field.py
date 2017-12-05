@@ -20,11 +20,12 @@ class Area(pygame.sprite.Sprite):
     _is_cleared = False # This area has been cleared, i.e do not contain any mine
     _is_marked = False # This area has been marked as mined
 
-    def __init__(self, images, has_mine):
+    def __init__(self, has_mine, images, fonts):
         super(Area, self).__init__()
 
-        self.images = images
         self.has_mine = has_mine
+        self.images = images
+        self.fonts = fonts
 
         self._draw()
 
@@ -63,7 +64,7 @@ class Area(pygame.sprite.Sprite):
 
     def mark_as_clear(self):
         """Try to mark this area as clear."""
-        if self.is_cleared:
+        if self.is_cleared or self.is_marked:
             return False
 
         self.is_cleared = True
@@ -78,15 +79,22 @@ class Area(pygame.sprite.Sprite):
 
         # Blit the area background on the empty surface
         background = self.images['area_cleared' if self.is_cleared else 'area_uncleared']
+        background_rect = background.get_rect()
+        background_rect.center = self.rect.center
 
-        self.image.blit(background, background.get_rect())
+        self.image.blit(background, background_rect)
 
-        # Blit the mine marker, if any
-        if self.is_marked:
+        if self.is_marked: # Blit the mine marker, if any
             marked_rect = self.images['mine_marker'].get_rect()
             marked_rect.center = self.rect.center
 
             self.image.blit(self.images['mine_marker'], marked_rect)
+        elif self.is_cleared and self.nearby_mines_count > 0: # Blit the nearby mines count if > 0
+            nearby_mines_label = self.fonts['nearby_mines_count'].render(str(self.nearby_mines_count), True, self.nearby_mines_count_color)
+            nearby_mines_label_rect = nearby_mines_label.get_rect()
+            nearby_mines_label_rect.center = self.rect.center
+
+            self.image.blit(nearby_mines_label, nearby_mines_label_rect)
 
     @property
     def nearby_mines_count_color(self):
@@ -97,11 +105,13 @@ class Area(pygame.sprite.Sprite):
 class Field:
     field = []
 
-    def __init__(self, images, width, height, mines):
-        self.images = images
+    def __init__(self, width, height, mines, images, fonts):
         self.width = width
         self.height = height
         self.mines = mines
+        self.images = images
+        self.fonts = fonts
+
         self.areas = self.width * self.height
 
         if self.mines > self.areas:
@@ -136,7 +146,8 @@ class Field:
             for x in range(0, self.width):
                 row.append(Area(
                     has_mine=area_number in areas_with_mine,
-                    images=self.images
+                    images=self.images,
+                    fonts=self.fonts
                 ))
 
                 area_number += 1

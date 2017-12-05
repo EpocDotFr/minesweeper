@@ -24,7 +24,9 @@ class Game:
         """Load the fonts."""
         logging.info('Loading fonts')
 
-        self.nearby_mines_count_font = helpers.load_font('coolvetica.ttf', 14)
+        self.fonts = {
+            'nearby_mines_count': helpers.load_font('coolvetica.ttf', 16)
+        }
 
     def _load_images(self):
         """Load all images."""
@@ -40,7 +42,14 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        self.field = field.Field(images=self.images, width=settings.WIDTH, height=settings.HEIGHT, mines=settings.MINES)
+        self.field = field.Field(
+            width=settings.WIDTH,
+            height=settings.HEIGHT,
+            mines=settings.MINES,
+            images=self.images,
+            fonts=self.fonts
+        )
+
         print(self.field)
 
     def update(self):
