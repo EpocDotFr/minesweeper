@@ -31,10 +31,8 @@ class Game:
         logging.info('Loading images')
 
         self.images = {
-            'area': {
-                'cleared': [helpers.load_image('area/cleared_{}.png'.format(i)) for i in range(1, 3)],
-                'uncleared': [helpers.load_image('area/uncleared_{}.png'.format(i)) for i in range(1, 3)]
-            },
+            'area_cleared': helpers.load_image('area_cleared.png'),
+            'area_uncleared': helpers.load_image('area_uncleared.png'),
             'mine_marker': helpers.load_image('mine_marker.png')
         }
 

@@ -72,9 +72,16 @@ class Area(pygame.sprite.Sprite):
 
     def _draw(self):
         """Draw this area."""
-        self.image = random.choice(self.images['area']['cleared' if self.is_cleared else 'uncleared'])
+        # Create an empty surface and assign it to this area
+        self.image = pygame.Surface((settings.AREAS_SIDE_SIZE, settings.AREAS_SIDE_SIZE), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = self.image.get_rect()
 
+        # Blit the area background on the empty surface
+        background = self.images['area_cleared' if self.is_cleared else 'area_uncleared']
+
+        self.image.blit(background, background.get_rect())
+
+        # Blit the mine marker, if any
         if self.is_marked:
             marked_rect = self.images['mine_marker'].get_rect()
             marked_rect.center = self.rect.center
