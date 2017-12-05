@@ -35,7 +35,9 @@ class Game:
         self.images = {
             'area_cleared': helpers.load_image('area_cleared.png'),
             'area_uncleared': helpers.load_image('area_uncleared.png'),
-            'mine_marker': helpers.load_image('mine_marker.png')
+            'mine_marker': helpers.load_image('mine_marker.png'),
+            'mine_exploded': helpers.load_image('mine_exploded.png'),
+            'mine': helpers.load_image('mine.png')
         }
 
     def _start_new_game(self):
@@ -96,6 +98,11 @@ class Game:
             return False
 
         area.mark_as_clear()
+
+        if area.mine_has_exploded:
+            self.field.show_mines = True
+
+            # TODO Game over
 
         return True
 
