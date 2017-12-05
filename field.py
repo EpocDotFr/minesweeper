@@ -1,7 +1,6 @@
 import settings
 import random
 import pygame
-import click
 
 
 DIRECTIONS = (
@@ -18,8 +17,8 @@ DIRECTIONS = (
 
 class Area(pygame.sprite.Sprite):
     nearby_mines_count = 0
-    cleared = False # This area has been cleared, i.e do not contain any mine
-    marked = False # This area has been marked as mined
+    _is_cleared = False # This area has been cleared, i.e do not contain any mine
+    _is_marked = False # This area has been marked as mined
 
     def __init__(self, images, has_mine):
         super(Area, self).__init__()
@@ -29,12 +28,54 @@ class Area(pygame.sprite.Sprite):
 
         self._draw()
 
+    @property
+    def is_cleared(self):
+        """is_cleared getter."""
+        return self._is_cleared
+
+    @is_cleared.setter
+    def is_cleared(self, value):
+        """is_cleared setter."""
+        self._is_cleared = value
+
+        self._draw()
+
+    @property
+    def is_marked(self):
+        """is_marked getter."""
+        return self._is_marked
+
+    @is_marked.setter
+    def is_marked(self, value):
+        """is_marked setter."""
+        self._is_marked = value
+
+        self._draw()
+
+    def toggle_mine_marker(self):
+        """Try to toggle this area's mine marker."""
+        if self.is_cleared:
+            return False
+
+        self.is_marked = not self.is_marked
+
+        return True
+
+    def mark_as_clear(self):
+        """Try to mark this area as clear."""
+        if self.is_cleared:
+            return False
+
+        self.is_cleared = True
+
+        return True
+
     def _draw(self):
         """Draw this area."""
-        self.image = random.choice(self.images['area']['cleared' if self.cleared else 'uncleared'])
+        self.image = random.choice(self.images['area']['cleared' if self.is_cleared else 'uncleared'])
         self.rect = self.image.get_rect()
 
-        if self.marked:
+        if self.is_marked:
             marked_rect = self.images['mine_marker'].get_rect()
             marked_rect.center = self.rect.center
 
@@ -62,47 +103,6 @@ class Field:
         self._populate()
         self._compute_nearby_mines()
 
-    def mark_area_as_mined(self, x, y):
-        """Try to mark the area at the specified coordinates as mined."""
-        if self.field[y][x].cleared:
-            return False
-
-        if self.field[y][x].marked:
-            self.field[y][x].marked = False
-        else:
-            self.field[y][x].marked = True
-
-        return True
-
-    def mark_area_as_clear(self, x, y):
-        """Try to mark the area at the specified coordinates as clear."""
-        if self.field[y][x].cleared:
-            return False
-
-        self.field[y][x].cleared = True
-
-        return True
-
-    def print(self):
-        """Print the current field state to stdout."""
-        for y, row in enumerate(self.field):
-            click.echo('{:>2} '.format(y), nl=False)
-
-            for area in row:
-                if area.has_mine:
-                    out = 'X'
-                    color = 'red'
-                elif area.nearby_mines_count > 0:
-                    out = str(area.nearby_mines_count)
-                    color = 'cyan'
-                else:
-                    out = ' '
-                    color = None
-
-                click.secho(out, nl=False, fg=color)
-
-            click.echo()
-
     def _generate_areas_with_mine(self):
         """Generate random mines position for the current field."""
         areas_with_mine = []
@@ -127,7 +127,10 @@ class Field:
             row = []
 
             for x in range(0, self.width):
-                row.append(Area(images=self.images, has_mine=area_number in areas_with_mine))
+                row.append(Area(
+                    has_mine=area_number in areas_with_mine,
+                    images=self.images
+                ))
 
                 area_number += 1
 
@@ -154,3 +157,24 @@ class Field:
 
                     if self.field[nearby_y][nearby_x].has_mine:
                         area.nearby_mines_count += 1
+
+    def __str__(self):
+        """Return a text representation of this field."""
+        ret = []
+
+        for y, row in enumerate(self.field):
+            ret_row = '{:>2}|'.format(y)
+
+            for area in row:
+                if area.has_mine:
+                    out = 'X'
+                elif area.nearby_mines_count > 0:
+                    out = str(area.nearby_mines_count)
+                else:
+                    out = ' '
+
+                ret_row += out
+
+            ret.append(ret_row)
+
+        return '\n'.join(ret)

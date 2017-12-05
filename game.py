@@ -43,7 +43,7 @@ class Game:
         logging.info('Initializing new game')
 
         self.field = field.Field(images=self.images, width=settings.WIDTH, height=settings.HEIGHT, mines=settings.MINES)
-        self.field.print()
+        print(self.field)
 
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
@@ -52,7 +52,9 @@ class Game:
         # Events handling
         for event in pygame.event.get():
             event_handlers = [
-                self._event_quit # TODO
+                self._event_quit,
+                self._event_area_left_click,
+                self._event_area_right_click
             ]
 
             for handler in event_handlers:
@@ -61,7 +63,7 @@ class Game:
 
         # Drawings
         self._draw_grid()
-        self._draw_areas()
+        self._draw_field()
 
         # PyGame-related updates
         pygame.display.update()
@@ -76,6 +78,39 @@ class Game:
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             pygame.quit()
             sys.exit()
+
+        return False
+
+    def _event_area_left_click(self, event):
+        """Left click handler on an area."""
+        area = self._get_clicked_area(event, settings.MOUSE_BUTTON_LEFT)
+
+        if not area:
+            return False
+
+        area.mark_as_clear()
+
+        return True
+
+    def _event_area_right_click(self, event):
+        """Right click handler on an area."""
+        area = self._get_clicked_area(event, settings.MOUSE_BUTTON_RIGHT)
+
+        if not area:
+            return False
+
+        area.toggle_mine_marker()
+
+        return True
+
+    def _get_clicked_area(self, event, required_button):
+        if event.type != pygame.MOUSEBUTTONUP or event.button != required_button:
+            return False
+
+        for row in self.field.field:
+            for area in row:
+                if area.rect.collidepoint(event.pos):
+                    return area
 
         return False
 
@@ -104,8 +139,8 @@ class Game:
                 )
             )
 
-    def _draw_areas(self):
-        """Draw the areas."""
+    def _draw_field(self):
+        """Draw each areas of the mines field."""
         for y, row in enumerate(self.field.field):
             for x, area in enumerate(row):
                 area.rect.top = y * settings.AREAS_SIDE_SIZE + y * settings.GRID_SPACING

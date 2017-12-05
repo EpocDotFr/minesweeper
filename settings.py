@@ -35,6 +35,9 @@ SOUNDS_VOLUME = 0.3
 # When frozen by PyInstaller, the path to the resources is different
 RESOURCES_ROOT = os.path.join(sys._MEIPASS, 'resources') if getattr(sys, 'frozen', False) else 'resources'
 
+MOUSE_BUTTON_LEFT = 1
+MOUSE_BUTTON_RIGHT = 3
+
 WINDOW_SIZE = (
     WIDTH * AREAS_SIDE_SIZE + (WIDTH - 1) * GRID_SPACING,
     HEIGHT * AREAS_SIDE_SIZE + (HEIGHT - 1) * GRID_SPACING
