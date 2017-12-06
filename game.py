@@ -1,4 +1,4 @@
-from field import Field
+from field import Field, AreaState
 import settings
 import logging
 import helpers
@@ -48,7 +48,7 @@ class Game:
         self.mines_left = settings.MINES
         self.duration = 0
 
-        self.state = settings.GAME_STATE.PLAYING
+        self.state = settings.GameState.PLAYING
 
         self.field = Field(
             width=settings.WIDTH,
@@ -113,11 +113,11 @@ class Game:
         if not area:
             return False
 
-        if area.mark_as_clear() and area.mine_has_exploded:
+        if area.mark_as_clear() and area.state == AreaState.EXPLODED:
             logging.info('Game over')
 
             self.field.show_mines = True
-            self.state = settings.GAME_STATE.LOST
+            self.state = settings.GameState.LOST
 
             self._toggle_duration_counter(False)
 
@@ -131,7 +131,7 @@ class Game:
             return False
 
         if area.toggle_mine_marker():
-            if area.is_marked:
+            if area.state == AreaState.MARKED:
                 self.mines_left -= 1
             else:
                 self.mines_left += 1
@@ -149,7 +149,7 @@ class Game:
 
     def _get_clicked_area(self, event, required_button):
         """Return the area that was clicked."""
-        if self.state != settings.GAME_STATE.PLAYING or event.type != pygame.MOUSEBUTTONUP or event.button != required_button:
+        if self.state != settings.GameState.PLAYING or event.type != pygame.MOUSEBUTTONUP or event.button != required_button:
             return False
 
         for row in self.field.field:
