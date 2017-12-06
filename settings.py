@@ -41,6 +41,12 @@ RESOURCES_ROOT = os.path.join(sys._MEIPASS, 'resources') if getattr(sys, 'frozen
 
 GAME_DURATION_EVENT = pygame.USEREVENT + 1
 
+
+class GAME_STATE:
+    PLAYING = 2
+    LOST = 4
+    WON = 8
+
 MOUSE_BUTTON_LEFT = 1
 MOUSE_BUTTON_RIGHT = 3
 
