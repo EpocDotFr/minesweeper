@@ -1,3 +1,4 @@
+import pygame
 import sys
 import os
 
@@ -13,7 +14,7 @@ HEIGHT = 16
 MINES = 99
 
 GRID_SPACING = 1
-GRID_COLOR = (195, 195, 195)
+GRID_COLOR = (63, 137, 78)
 
 NEARBY_MINES_COUNT_COLORS = {
     1: (0, 0, 255),
@@ -29,16 +30,23 @@ NEARBY_MINES_COUNT_COLORS = {
 MUSIC_VOLUME = 0.2
 SOUNDS_VOLUME = 0.3
 
+WINDOW_BACKGROUND_COLOR = (232, 255, 219)
+TEXT_COLOR = (63, 137, 78)
+
 # ----------------------------------------------------------------------
 # Game constants - do not edit anything after this line
 
 # When frozen by PyInstaller, the path to the resources is different
 RESOURCES_ROOT = os.path.join(sys._MEIPASS, 'resources') if getattr(sys, 'frozen', False) else 'resources'
 
+GAME_DURATION_EVENT = pygame.USEREVENT + 1
+
 MOUSE_BUTTON_LEFT = 1
 MOUSE_BUTTON_RIGHT = 3
 
+INFO_PANEL_HEIGHT = 55
+
 WINDOW_SIZE = (
     WIDTH * AREAS_SIDE_SIZE + (WIDTH - 1) * GRID_SPACING,
-    HEIGHT * AREAS_SIDE_SIZE + (HEIGHT - 1) * GRID_SPACING
+    INFO_PANEL_HEIGHT + HEIGHT * AREAS_SIDE_SIZE + (HEIGHT - 1) * GRID_SPACING
 )

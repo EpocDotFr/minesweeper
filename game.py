@@ -1,8 +1,9 @@
+from field import Field
 import settings
 import logging
 import helpers
 import pygame
-import field
+import time
 import sys
 
 
@@ -25,6 +26,7 @@ class Game:
         logging.info('Loading fonts')
 
         self.fonts = {
+            'normal': helpers.load_font('coolvetica.ttf', 26),
             'nearby_mines_count': helpers.load_font('coolvetica.ttf', 16)
         }
 
@@ -44,7 +46,12 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        self.field = field.Field(
+        self.mines_left = settings.MINES
+        self.duration = 0
+
+        self.is_game_over = False
+
+        self.field = Field(
             width=settings.WIDTH,
             height=settings.HEIGHT,
             mines=settings.MINES,
@@ -53,6 +60,12 @@ class Game:
         )
 
         print(self.field)
+
+        self._toggle_duration_counter(True)
+
+    def _toggle_duration_counter(self, enable=True):
+        """Update the game duration counter event."""
+        pygame.time.set_timer(settings.GAME_DURATION_EVENT, 1000 if enable else 0) # Every seconds
 
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
@@ -63,7 +76,8 @@ class Game:
             event_handlers = [
                 self._event_quit,
                 self._event_area_left_click,
-                self._event_area_right_click
+                self._event_area_right_click,
+                self._event_game_duration
             ]
 
             for handler in event_handlers:
@@ -71,6 +85,9 @@ class Game:
                     break
 
         # Drawings
+        self.window.fill(settings.WINDOW_BACKGROUND_COLOR)
+
+        self._draw_info_panel()
         self._draw_grid()
         self._draw_field()
 
@@ -97,10 +114,12 @@ class Game:
         if not area:
             return False
 
-        area.mark_as_clear()
-
-        if area.mine_has_exploded:
+        if area.mark_as_clear() and area.mine_has_exploded:
             self.field.show_mines = True
+
+            self._toggle_duration_counter(False)
+
+            logging.info('Game over')
 
             # TODO Game over
 
@@ -113,7 +132,20 @@ class Game:
         if not area:
             return False
 
-        area.toggle_mine_marker()
+        if area.toggle_mine_marker():
+            if area.is_marked:
+                self.mines_left -= 1
+            else:
+                self.mines_left += 1
+
+        return True
+
+    def _event_game_duration(self, event):
+        """Count the duration of the current game."""
+        if event.type != settings.GAME_DURATION_EVENT:
+            return False
+
+        self.duration += 1
 
         return True
 
@@ -131,14 +163,32 @@ class Game:
     # --------------------------------------------------------------------------
     # Drawing handlers
 
+    def _draw_info_panel(self):
+        """Draws the information panel."""
+        # Mines left
+        mines_left_text = self.fonts['normal'].render(str(self.mines_left), True, settings.TEXT_COLOR)
+        mines_left_text_rect = mines_left_text.get_rect()
+        mines_left_text_rect.left = 25
+        mines_left_text_rect.top = 10
+
+        self.window.blit(mines_left_text, mines_left_text_rect)
+
+        # Game duration
+        duration_text = self.fonts['normal'].render(helpers.humanize_seconds(self.duration), True, settings.TEXT_COLOR)
+        duration_text_rect = duration_text.get_rect()
+        duration_text_rect.right = self.window_rect.w - 25
+        duration_text_rect.top = 10
+
+        self.window.blit(duration_text, duration_text_rect)
+
     def _draw_grid(self):
-        """Draw the grid which separates the areas."""
+        """Draws the grid which separates the areas."""
         for x in range(0, settings.WIDTH + 1):
             pygame.draw.rect(
                 self.window,
                 settings.GRID_COLOR,
                 pygame.Rect(
-                    (x * settings.AREAS_SIDE_SIZE + (x - 1) * settings.GRID_SPACING, 0),
+                    (x * settings.AREAS_SIDE_SIZE + (x - 1) * settings.GRID_SPACING, settings.INFO_PANEL_HEIGHT),
                     (settings.GRID_SPACING, self.window_rect.h)
                 )
             )
@@ -148,16 +198,16 @@ class Game:
                 self.window,
                 settings.GRID_COLOR,
                 pygame.Rect(
-                    (0, y * settings.AREAS_SIDE_SIZE + (y - 1) * settings.GRID_SPACING),
+                    (0, y * settings.AREAS_SIDE_SIZE + (y - 1) * settings.GRID_SPACING + settings.INFO_PANEL_HEIGHT),
                     (self.window_rect.w, settings.GRID_SPACING)
                 )
             )
 
     def _draw_field(self):
-        """Draw each areas of the mines field."""
+        """Draws each areas of the mines field."""
         for y, row in enumerate(self.field.field):
             for x, area in enumerate(row):
-                area.rect.top = y * settings.AREAS_SIDE_SIZE + y * settings.GRID_SPACING
+                area.rect.top = y * settings.AREAS_SIDE_SIZE + y * settings.GRID_SPACING + settings.INFO_PANEL_HEIGHT
                 area.rect.left = x * settings.AREAS_SIDE_SIZE + x * settings.GRID_SPACING
 
                 self.window.blit(area.image, area.rect)

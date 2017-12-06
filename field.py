@@ -112,12 +112,12 @@ class Area(pygame.sprite.Sprite):
             nearby_mines_text_rect.center = self.rect.center
 
             self.image.blit(nearby_mines_text, nearby_mines_text_rect)
-        elif self.mine_has_exploded:
+        elif self.mine_has_exploded: # The player walked on a mine (game over)
             mine_exploded_rect = self.images['mine_exploded'].get_rect()
             mine_exploded_rect.center = self.rect.center
 
             self.image.blit(self.images['mine_exploded'], mine_exploded_rect)
-        elif self.field.show_mines and self.has_mine:
+        elif self.field.show_mines and self.has_mine: # Game over: show all mines
             mine_rect = self.images['mine'].get_rect()
             mine_rect.center = self.rect.center
 
@@ -158,10 +158,11 @@ class Field:
         """show_mines setter."""
         self._show_mines = value
 
-        for y, row in enumerate(self.field):
-            for x, area in enumerate(row):
-                if area.has_mine:
-                    area.draw()
+        if self._show_mines:
+            for row in self.field:
+                for area in row:
+                    if area.has_mine:
+                        area.draw()
 
     def _generate_areas_with_mine(self):
         """Generate random mines position for the current field."""
