@@ -76,6 +76,7 @@ class Game:
                 self._event_quit,
                 self._event_area_left_click,
                 self._event_area_right_click,
+                self._event_game_key,
                 self._event_game_duration
             ]
 
@@ -113,13 +114,20 @@ class Game:
         if not area:
             return False
 
-        if area.mark_as_clear() and area.state == AreaState.EXPLODED:
-            logging.info('Game over')
+        if area.mark_as_clear():
+            if area.state == AreaState.EXPLODED:
+                logging.info('Game lost')
 
-            self.field.show_mines = True
-            self.state = settings.GameState.LOST
+                self.field.show_mines = True
+                self.state = settings.GameState.LOST
 
-            self._toggle_duration_counter(False)
+                self._toggle_duration_counter(False)
+            elif self.field.are_all_mines_cleared():
+                logging.info('Game won')
+
+                self.state = settings.GameState.WON
+
+                self._toggle_duration_counter(False)
 
         return True
 
@@ -146,6 +154,16 @@ class Game:
         self.duration += 1
 
         return True
+
+    def _event_game_key(self, event):
+        """Handle the game keys."""
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F1:
+                self._start_new_game()
+
+                return True
+
+        return False
 
     def _get_clicked_area(self, event, required_button):
         """Return the area that was clicked."""

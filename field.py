@@ -152,6 +152,15 @@ class Field:
                     if area.has_mine:
                         area.draw()
 
+    def are_all_mines_cleared(self):
+        """Determine if all mines are marked by the player."""
+        for row in self.field:
+            for area in row:
+                if area.has_mine and area.state != AreaState.MARKED:
+                    return False
+
+        return True
+
     def _generate_areas_with_mine(self):
         """Generate random mines position for the current field."""
         areas_with_mine = []
