@@ -45,7 +45,6 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        self.mines_left = settings.MINES
         self.duration = 0
 
         self.state = settings.GameState.PLAYING
@@ -65,6 +64,15 @@ class Game:
     def _toggle_duration_counter(self, enable=True):
         """Update the game duration counter event."""
         pygame.time.set_timer(settings.GAME_DURATION_EVENT, 1000 if enable else 0) # Every seconds
+
+    def _check_win_condition(self):
+        """Check if the player won the game."""
+        if self.field.is_clear():
+            logging.info('Game won')
+
+            self.state = settings.GameState.WON
+
+            self._toggle_duration_counter(False)
 
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
@@ -122,12 +130,8 @@ class Game:
                 self.state = settings.GameState.LOST
 
                 self._toggle_duration_counter(False)
-            elif self.field.are_all_mines_cleared():
-                logging.info('Game won')
-
-                self.state = settings.GameState.WON
-
-                self._toggle_duration_counter(False)
+            else:
+                self._check_win_condition()
 
         return True
 
@@ -139,10 +143,7 @@ class Game:
             return False
 
         if area.toggle_mine_marker():
-            if area.state == AreaState.MARKED:
-                self.mines_left -= 1
-            else:
-                self.mines_left += 1
+            self._check_win_condition()
 
         return True
 
@@ -183,7 +184,7 @@ class Game:
     def _draw_info_panel(self):
         """Draws the information panel."""
         # Mines left
-        mines_left_text = self.fonts['normal'].render(str(self.mines_left), True, settings.TEXT_COLOR)
+        mines_left_text = self.fonts['normal'].render(str(self.field.mines_left), True, settings.TEXT_COLOR)
         mines_left_text_rect = mines_left_text.get_rect()
         mines_left_text_rect.left = 25
         mines_left_text_rect.top = 10

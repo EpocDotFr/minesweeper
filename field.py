@@ -54,9 +54,14 @@ class Area(pygame.sprite.Sprite):
             return False
 
         if self.state == AreaState.INITIAL:
-            self.state = AreaState.MARKED
+            if self.field.mines_left > 0:
+                self.state = AreaState.MARKED
+                self.field.mines_left -= 1
+            else:
+                return False
         else:
             self.state = AreaState.INITIAL
+            self.field.mines_left += 1
 
         return True
 
@@ -124,7 +129,7 @@ class Field:
     def __init__(self, width, height, mines, images, fonts):
         self.width = width
         self.height = height
-        self.mines = mines
+        self.mines = self.mines_left = mines
         self.images = images
         self.fonts = fonts
 
@@ -152,11 +157,11 @@ class Field:
                     if area.has_mine:
                         area.draw()
 
-    def are_all_mines_cleared(self):
-        """Determine if all mines are marked by the player."""
+    def is_clear(self):
+        """Determine if the field has been cleared of all of its mines (win condition)."""
         for row in self.field:
             for area in row:
-                if area.has_mine and area.state != AreaState.MARKED:
+                if (area.has_mine and area.state != AreaState.MARKED) or area.state == AreaState.INITIAL:
                     return False
 
         return True
@@ -197,7 +202,7 @@ class Field:
             self.field.append(row)
 
     def _compute_nearby_mines(self):
-        """For each area that isn't mined, compute the surrounding mined areas."""
+        """For each area that aren't mined, compute the surrounding areas that are mined."""
         for y, row in enumerate(self.field):
             for x, area in enumerate(row):
                 if area.has_mine:
