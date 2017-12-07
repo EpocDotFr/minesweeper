@@ -45,10 +45,6 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
-        self.duration = 0
-
-        self.state = settings.GameState.PLAYING
-
         self.field = Field(
             width=settings.WIDTH,
             height=settings.HEIGHT,
@@ -58,6 +54,9 @@ class Game:
         )
 
         print(self.field)
+
+        self.duration = 0
+        self.state = settings.GameState.PLAYING
 
         self._toggle_duration_counter(True)
 
@@ -183,15 +182,22 @@ class Game:
 
     def _draw_info_panel(self):
         """Draws the information panel."""
-        # Mines left
+        # Mines left icon
+        mines_left_icon_rect = self.images['mine'].get_rect()
+        mines_left_icon_rect.left = 25
+        mines_left_icon_rect.top = 20
+
+        self.window.blit(self.images['mine'], mines_left_icon_rect)
+
+        # Mines left text
         mines_left_text = self.fonts['normal'].render(str(self.field.mines_left), True, settings.TEXT_COLOR)
         mines_left_text_rect = mines_left_text.get_rect()
-        mines_left_text_rect.left = 25
+        mines_left_text_rect.left = 50
         mines_left_text_rect.top = 10
 
         self.window.blit(mines_left_text, mines_left_text_rect)
 
-        # Game duration
+        # Game duration text
         duration_text = self.fonts['normal'].render(helpers.humanize_seconds(self.duration), True, settings.TEXT_COLOR)
         duration_text_rect = duration_text.get_rect()
         duration_text_rect.right = self.window_rect.w - 25

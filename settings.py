@@ -9,9 +9,9 @@ FPS = 30
 
 AREAS_SIDE_SIZE = 25
 
-WIDTH = 5
-HEIGHT = 5
-MINES = 3
+WIDTH = 30
+HEIGHT = 16
+MINES = 99
 
 GRID_SPACING = 1
 GRID_COLOR = (63, 137, 78)
@@ -30,8 +30,8 @@ NEARBY_MINES_COUNT_COLORS = {
 MUSIC_VOLUME = 0.2
 SOUNDS_VOLUME = 0.3
 
-WINDOW_BACKGROUND_COLOR = (232, 255, 219)
-TEXT_COLOR = (63, 137, 78)
+WINDOW_BACKGROUND_COLOR = (164, 165, 148)
+TEXT_COLOR = (86, 84, 77)
 
 # ----------------------------------------------------------------------
 # Game constants - do not edit anything after this line
