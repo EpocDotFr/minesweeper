@@ -6,7 +6,8 @@ The [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) game, 
 
 ## Features
 
-> TODO
+  - All the Minesweeper rules
+  - State of the art graphics
 
 ## Prerequisites
 
@@ -24,7 +25,11 @@ python run.py
 
 ### Controls
 
-> TODO
+  - <kbd>ESC</kbd> closes the game
+  - <kbd>F1</kbd> starts a new game
+  - <kbd>F2</kbd> displays stats
+  - <kbd>LMB</kbd> clears an area
+  - <kbd>RMB</kbd> place a mine marker on an area
 
 ## How it works
 

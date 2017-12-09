@@ -25,8 +25,10 @@ class Game:
         logging.info('Loading fonts')
 
         self.fonts = {
-            'normal': helpers.load_font('coolvetica.ttf', 26),
-            'nearby_mines_count': helpers.load_font('coolvetica.ttf', 16)
+            'info_panel': helpers.load_font('coolvetica.ttf', 26),
+            'nearby_mines_count': helpers.load_font('coolvetica.ttf', 16),
+            'normal': helpers.load_font('coolvetica.ttf', 18),
+            'title': helpers.load_font('coolvetica.ttf', 30)
         }
 
     def _load_images(self):
@@ -97,6 +99,9 @@ class Game:
         self._draw_info_panel()
         self._draw_grid()
         self._draw_field()
+
+        if self.state == settings.GameState.LOST:
+            self._draw_game_over_screen()
 
         # PyGame-related updates
         pygame.display.update()
@@ -183,7 +188,7 @@ class Game:
     def _draw_info_panel(self):
         """Draws the information panel."""
         # Mines left text
-        mines_left_text = self.fonts['normal'].render(str(self.field.mines_left), True, settings.TEXT_COLOR)
+        mines_left_text = self.fonts['info_panel'].render(str(self.field.mines_left), True, settings.TEXT_COLOR)
         mines_left_text_rect = mines_left_text.get_rect()
         mines_left_text_rect.left = 25
         mines_left_text_rect.top = 10
@@ -191,7 +196,7 @@ class Game:
         self.window.blit(mines_left_text, mines_left_text_rect)
 
         # Game duration text
-        duration_text = self.fonts['normal'].render(helpers.humanize_seconds(self.duration), True, settings.TEXT_COLOR)
+        duration_text = self.fonts['info_panel'].render(helpers.humanize_seconds(self.duration), True, settings.TEXT_COLOR)
         duration_text_rect = duration_text.get_rect()
         duration_text_rect.right = self.window_rect.w - 25
         duration_text_rect.top = 10
@@ -228,3 +233,54 @@ class Game:
                 area.rect.left = x * settings.AREAS_SIDE_SIZE + x * settings.GRID_SPACING
 
                 self.window.blit(area.image, area.rect)
+
+    def _draw_fullscreen_transparent_background(self):
+        """Draws a transparent rect that takes the whole window."""
+        rect = pygame.Surface(self.window_rect.size)
+        rect.set_alpha(190)
+        rect.fill(settings.WINDOW_BACKGROUND_COLOR)
+
+        self.window.blit(
+            rect,
+            pygame.Rect(
+                (0, 0),
+                self.window_rect.size
+            )
+        )
+
+    def _draw_fullscreen_window(self, title, text):
+        """Draws a title and a text in the middle of the screen."""
+        if isinstance(text, str):
+            text = [text]
+
+        self._draw_fullscreen_transparent_background()
+
+        # Title
+        title_label = self.fonts['title'].render(title, True, settings.TEXT_COLOR)
+        title_label_rect = title_label.get_rect()
+        title_label_rect.center = self.window_rect.center
+        title_label_rect.centery -= 15
+
+        self.window.blit(title_label, title_label_rect)
+
+        # Text
+        spacing = 15
+
+        for t in text:
+            text_label = self.fonts['normal'].render(t, True, settings.TEXT_COLOR)
+            text_label_rect = text_label.get_rect()
+            text_label_rect.center = self.window_rect.center
+            text_label_rect.centery += spacing
+
+            self.window.blit(text_label, text_label_rect)
+
+            spacing += 20
+
+    def _draw_game_over_screen(self):
+        """Draws the Game over screen."""
+        lost_string = [
+            'Looks like this area wasn\'t this safe after all :/',
+            'Press "F1" to start a new game.'
+        ]
+
+        self._draw_fullscreen_window('Game over!', lost_string)
