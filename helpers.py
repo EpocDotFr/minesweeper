@@ -87,3 +87,11 @@ def humanize_seconds(seconds):
     f, v = zip(*ret)
 
     return ' '.join(f).format(*v)
+
+
+def humanize_integer(integer):
+    """Return a slightly more human-readable representation of the given integer."""
+    if not integer:
+        return '0'
+
+    return format(integer, ',d').replace(',', ' ')

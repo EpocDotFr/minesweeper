@@ -8,6 +8,7 @@ The [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) game, 
 
   - All the Minesweeper rules
   - State of the art graphics
+  - Stats
 
 ## Prerequisites
 

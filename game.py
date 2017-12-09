@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from field import Field, AreaState
 import settings
 import logging
@@ -7,6 +8,14 @@ import sys
 
 
 class Game:
+    stats = OrderedDict([
+        ('play_time', {'name': 'Play time', 'value': 0, 'format': helpers.humanize_seconds}),
+        ('longest_game', {'name': 'Longest game', 'value': 0, 'format': helpers.humanize_seconds}),
+        ('shortest_game', {'name': 'Shortest game', 'value': 0, 'format': helpers.humanize_seconds}),
+        ('games_won', {'name': 'Total games won', 'value': 0, 'format': helpers.humanize_integer}),
+        ('games_lost', {'name': 'Total games lost', 'value': 0, 'format': helpers.humanize_integer})
+    ])
+
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.window = pygame.display.set_mode(settings.WINDOW_SIZE, pygame.DOUBLEBUF)
@@ -239,7 +248,7 @@ class Game:
     def _draw_fullscreen_transparent_background(self):
         """Draws a transparent rect that takes the whole window."""
         rect = pygame.Surface(self.window_rect.size)
-        rect.set_alpha(190)
+        rect.set_alpha(150)
         rect.fill(settings.WINDOW_BACKGROUND_COLOR)
 
         self.window.blit(
