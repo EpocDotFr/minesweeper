@@ -30,8 +30,8 @@ NEARBY_MINES_COUNT_COLORS = {
 MUSIC_VOLUME = 0.2
 SOUNDS_VOLUME = 0.3
 
-WINDOW_BACKGROUND_COLOR = (164, 165, 148)
-TEXT_COLOR = (86, 84, 77)
+WINDOW_BACKGROUND_COLOR = (227, 228, 230)
+TEXT_COLOR = (90, 91, 92)
 
 # ----------------------------------------------------------------------
 # Game constants - do not edit anything after this line

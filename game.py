@@ -182,17 +182,10 @@ class Game:
 
     def _draw_info_panel(self):
         """Draws the information panel."""
-        # Mines left icon
-        mines_left_icon_rect = self.images['mine'].get_rect()
-        mines_left_icon_rect.left = 25
-        mines_left_icon_rect.top = 20
-
-        self.window.blit(self.images['mine'], mines_left_icon_rect)
-
         # Mines left text
         mines_left_text = self.fonts['normal'].render(str(self.field.mines_left), True, settings.TEXT_COLOR)
         mines_left_text_rect = mines_left_text.get_rect()
-        mines_left_text_rect.left = 50
+        mines_left_text_rect.left = 25
         mines_left_text_rect.top = 10
 
         self.window.blit(mines_left_text, mines_left_text_rect)
