@@ -101,7 +101,9 @@ class Game:
         self._draw_field()
 
         if self.state == settings.GameState.LOST:
-            self._draw_game_over_screen()
+            self._draw_lost_screen()
+        elif self.state == settings.GameState.WON:
+            self._draw_won_screen()
 
         # PyGame-related updates
         pygame.display.update()
@@ -276,11 +278,20 @@ class Game:
 
             spacing += 20
 
-    def _draw_game_over_screen(self):
-        """Draws the Game over screen."""
+    def _draw_lost_screen(self):
+        """Draws the Lost screen."""
         lost_string = [
             'Looks like this area wasn\'t this safe after all :/',
             'Press "F1" to start a new game.'
         ]
 
         self._draw_fullscreen_window('Game over!', lost_string)
+
+    def _draw_won_screen(self):
+        """Draws the Won screen."""
+        lost_string = [
+            'You cleared this field from all the mines, well done!',
+            'Press "F1" to start a new game.'
+        ]
+
+        self._draw_fullscreen_window('All done!', lost_string)
