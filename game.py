@@ -257,8 +257,8 @@ class Game:
         self.window.blit(
             rect,
             pygame.Rect(
-                (0, 0),
-                self.window_rect.size
+                (0, settings.INFO_PANEL_HEIGHT),
+                (self.window_rect.w, settings.INFO_PANEL_HEIGHT)
             )
         )
 

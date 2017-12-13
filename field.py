@@ -113,6 +113,13 @@ class Area(pygame.sprite.Sprite):
 
         self.image.blit(background, background_rect)
 
+        # Game over: show all mines
+        if self.field.show_mines and self.has_mine and self.state != AreaState.EXPLODED:
+            mine_rect = self.images['mine'].get_rect()
+            mine_rect.center = self.rect.center
+
+            self.image.blit(self.images['mine'], mine_rect)
+
         if self.state == AreaState.MARKED: # Blit the mine marker, if any
             mine_marker_rect = self.images['mine_marker'].get_rect()
             mine_marker_rect.center = self.rect.center
@@ -129,11 +136,6 @@ class Area(pygame.sprite.Sprite):
             mine_exploded_rect.center = self.rect.center
 
             self.image.blit(self.images['mine_exploded'], mine_exploded_rect)
-        elif self.field.show_mines and self.has_mine: # Game over: show all mines
-            mine_rect = self.images['mine'].get_rect()
-            mine_rect.center = self.rect.center
-
-            self.image.blit(self.images['mine'], mine_rect)
 
     @property
     def nearby_mines_count_color(self):
@@ -166,6 +168,7 @@ class Field:
 
         del state['images']
         del state['fonts']
+        del state['show_mines']
 
         return state
 
@@ -173,7 +176,7 @@ class Field:
         """Needed by Pickle to properly initialize this Field instance."""
         self.__dict__.update(state)
 
-        # TODO call self._populate() but with a list of Area
+        # TODO assign images, fonts and field to the areas
 
     @property
     def show_mines(self):
