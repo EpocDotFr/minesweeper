@@ -7,9 +7,15 @@ import logging
 import helpers
 import pygame
 import sys
+import os
 
 
 class Game:
+    save_data = [
+        'field',
+        'duration'
+    ]
+
     # TODO Make something with this
     stats = OrderedDict([
         ('play_time', {'name': 'Play time', 'value': 0, 'format': helpers.humanize_seconds}),
@@ -30,7 +36,16 @@ class Game:
         self._load_fonts()
         self._load_images()
 
-        self._start_new_game()
+        if os.path.isfile(settings.SAVE_FILE_NAME):
+            save_game_manager.load_game(settings.SAVE_FILE_NAME, self, self.save_data)
+
+            self.field.set_state(images=self.images, fonts=self.fonts)
+
+            self.state = settings.GameState.PLAYING
+
+            self._toggle_duration_counter(True)
+        else:
+            self._start_new_game()
 
     def _load_fonts(self):
         """Load the fonts."""
@@ -128,6 +143,9 @@ class Game:
     def _event_quit(self, event):
         """Called when the game must be closed."""
         if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if self.state != settings.GameState.LOST:
+                save_game_manager.save_game(settings.SAVE_FILE_NAME, self, self.save_data)
+
             pygame.quit()
             sys.exit()
 
@@ -148,6 +166,9 @@ class Game:
                 self.state = settings.GameState.LOST
 
                 self._toggle_duration_counter(False)
+
+                if os.path.isfile(settings.SAVE_FILE_NAME):
+                    os.remove(settings.SAVE_FILE_NAME)
             else:
                 self._check_win_condition()
 

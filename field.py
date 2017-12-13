@@ -52,8 +52,6 @@ class Area(pygame.sprite.Sprite):
         """Needed by Pickle to properly initialize this Area instance."""
         self.__dict__.update(state)
 
-        self.draw()
-
     @property
     def state(self):
         """state getter."""
@@ -168,7 +166,6 @@ class Field:
 
         del state['images']
         del state['fonts']
-        del state['show_mines']
 
         return state
 
@@ -176,7 +173,17 @@ class Field:
         """Needed by Pickle to properly initialize this Field instance."""
         self.__dict__.update(state)
 
-        # TODO assign images, fonts and field to the areas
+    def set_state(self, images, fonts):
+        """Update attributes in this Field instance and all of its Area children."""
+        self.images = images
+        self.fonts = fonts
+
+        for row in self.field:
+            for area in row:
+                area.images = images
+                area.fonts = fonts
+
+                area.draw()
 
     @property
     def show_mines(self):

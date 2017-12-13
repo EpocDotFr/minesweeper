@@ -8,6 +8,8 @@ import os
 FPS = 30
 
 AREAS_SIDE_SIZE = 25
+SAVE_FILE_NAME = 'save.dat'
+STATS_FILE_NAME = 'stats.json'
 
 WIDTH = 30
 HEIGHT = 16
