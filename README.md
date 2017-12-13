@@ -8,7 +8,10 @@ The [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) game, 
 
   - All the Minesweeper rules
   - State of the art graphics
+  - Automatic game saving when quitting. If there's a saved game it is automatically loaded, too
   - Stats
+  - Sound effects!
+  - Musics!
 
 ## Prerequisites
 

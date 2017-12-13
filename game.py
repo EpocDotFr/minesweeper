@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from field import Field, AreaState
+import save_game_manager
+import stats_manager
 import settings
 import logging
 import helpers
@@ -8,6 +10,7 @@ import sys
 
 
 class Game:
+    # TODO Make something with this
     stats = OrderedDict([
         ('play_time', {'name': 'Play time', 'value': 0, 'format': helpers.humanize_seconds}),
         ('longest_game', {'name': 'Longest game', 'value': 0, 'format': helpers.humanize_seconds}),

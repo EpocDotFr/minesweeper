@@ -19,7 +19,7 @@ class AreaState:
     INITIAL = 2
     CLEARED = 4 # This area has been cleared, i.e do not contain any mine
     MARKED = 8 # This area has been marked as mined by the player
-    EXPLODED = 12 # The player tried to walk on a mine and it doesn't ended well
+    EXPLODED = 16 # The player tried to walk on a mine and it doesn't ended well
 
 
 class Area(pygame.sprite.Sprite):
@@ -33,6 +33,24 @@ class Area(pygame.sprite.Sprite):
         self.has_mine = has_mine
         self.images = images
         self.fonts = fonts
+
+        self.draw()
+
+    def __getstate__(self):
+        """Needed by Pickle to give the proper attributes to be picked."""
+        state = self.__dict__.copy()
+
+        del state['field']
+        del state['images']
+        del state['fonts']
+        del state['image']
+        del state['rect']
+
+        return state
+
+    def __setstate__(self, state):
+        """Needed by Pickle to properly initialize this Area instance."""
+        self.__dict__.update(state)
 
         self.draw()
 
@@ -79,17 +97,18 @@ class Area(pygame.sprite.Sprite):
 
     def draw(self):
         """Draw this area."""
-        # Create an empty surface and assign it to this area
-        self.image = pygame.Surface((settings.AREAS_SIDE_SIZE, settings.AREAS_SIDE_SIZE), pygame.SRCALPHA, 32).convert_alpha()
-        self.rect = self.image.get_rect()
-
-        # Blit the area background on the empty surface
         if self.state in [AreaState.INITIAL, AreaState.MARKED, AreaState.EXPLODED]:
             background = self.images['area_uncleared']
         elif self.state == AreaState.CLEARED:
             background = self.images['area_cleared']
 
+        # Create an empty surface and assign it to this area
         background_rect = background.get_rect()
+
+        self.image = pygame.Surface(background_rect.size, pygame.SRCALPHA, 32).convert_alpha()
+        self.rect = self.image.get_rect()
+
+        # Blit the area background on the empty surface
         background_rect.center = self.rect.center
 
         self.image.blit(background, background_rect)
@@ -140,6 +159,21 @@ class Field:
 
         self._populate()
         self._compute_nearby_mines()
+
+    def __getstate__(self):
+        """Needed by Pickle to give the proper attributes to be picked."""
+        state = self.__dict__.copy()
+
+        del state['images']
+        del state['fonts']
+
+        return state
+
+    def __setstate__(self, state):
+        """Needed by Pickle to properly initialize this Field instance."""
+        self.__dict__.update(state)
+
+        # TODO call self._populate() but with a list of Area
 
     @property
     def show_mines(self):
