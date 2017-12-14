@@ -23,9 +23,6 @@ class AreaState:
 
 
 class Area(pygame.sprite.Sprite):
-    nearby_mines_count = 0
-    _state = AreaState.INITIAL
-
     def __init__(self, field, has_mine, images, fonts):
         super(Area, self).__init__()
 
@@ -34,7 +31,8 @@ class Area(pygame.sprite.Sprite):
         self.images = images
         self.fonts = fonts
 
-        self.draw()
+        self.nearby_mines_count = 0
+        self.state = AreaState.INITIAL
 
     def __getstate__(self):
         """Needed by Pickle to give the proper attributes to be picked."""
@@ -143,7 +141,6 @@ class Area(pygame.sprite.Sprite):
 
 class Field:
     _show_mines = False
-    field = []
 
     def __init__(self, width, height, mines, images, fonts):
         self.width = width
@@ -156,6 +153,8 @@ class Field:
 
         if self.mines > self.areas:
             raise ValueError('Not enough space for {} mines'.format(self.mines))
+
+        self.field = []
 
         self._populate()
         self._compute_nearby_mines()
@@ -173,13 +172,14 @@ class Field:
         """Needed by Pickle to properly initialize this Field instance."""
         self.__dict__.update(state)
 
-    def set_state(self, images, fonts):
+    def set_state(self, field, images, fonts):
         """Update attributes in this Field instance and all of its Area children."""
         self.images = images
         self.fonts = fonts
 
         for row in self.field:
             for area in row:
+                area.field = field
                 area.images = images
                 area.fonts = fonts
 

@@ -39,7 +39,9 @@ class Game:
         if os.path.isfile(settings.SAVE_FILE_NAME):
             save_game_manager.load_game(settings.SAVE_FILE_NAME, self, self.save_data)
 
-            self.field.set_state(images=self.images, fonts=self.fonts)
+            self.field.set_state(field=self.field, images=self.images, fonts=self.fonts)
+
+            print(self.field)
 
             self.state = settings.GameState.PLAYING
 
