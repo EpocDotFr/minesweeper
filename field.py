@@ -172,14 +172,14 @@ class Field:
         """Needed by Pickle to properly initialize this Field instance."""
         self.__dict__.update(state)
 
-    def set_state(self, field, images, fonts):
+    def post_set_state(self, images, fonts):
         """Update attributes in this Field instance and all of its Area children."""
         self.images = images
         self.fonts = fonts
 
         for row in self.field:
             for area in row:
-                area.field = field
+                area.field = self
                 area.images = images
                 area.fonts = fonts
 

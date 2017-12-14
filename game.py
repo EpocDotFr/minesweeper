@@ -6,6 +6,7 @@ import settings
 import logging
 import helpers
 import pygame
+import time
 import sys
 import os
 
@@ -16,7 +17,6 @@ class Game:
         'duration'
     ]
 
-    # TODO Make something with this
     stats = OrderedDict([
         ('play_time', {'name': 'Play time', 'value': 0, 'format': helpers.humanize_seconds}),
         ('longest_game', {'name': 'Longest game', 'value': 0, 'format': helpers.humanize_seconds}),
@@ -30,16 +30,20 @@ class Game:
         self.window = pygame.display.set_mode(settings.WINDOW_SIZE, pygame.DOUBLEBUF)
         self.window_rect = self.window.get_rect()
 
+        self.started_playing_at = None
+
         pygame.display.set_caption('Minesweeper')
         pygame.display.set_icon(helpers.load_image('icon.png'))
 
         self._load_fonts()
         self._load_images()
 
+        stats_manager.load_stats(settings.STATS_FILE_NAME, self.stats)
+
         if os.path.isfile(settings.SAVE_FILE_NAME):
             save_game_manager.load_game(settings.SAVE_FILE_NAME, self, self.save_data)
 
-            self.field.set_state(field=self.field, images=self.images, fonts=self.fonts)
+            self.field.post_set_state(images=self.images, fonts=self.fonts)
 
             print(self.field)
 
@@ -76,6 +80,8 @@ class Game:
         """Start a new game."""
         logging.info('Initializing new game')
 
+        self._update_play_time()
+
         self.field = Field(
             width=settings.WIDTH,
             height=settings.HEIGHT,
@@ -88,8 +94,26 @@ class Game:
 
         self.duration = 0
         self.state = settings.GameState.PLAYING
+        self.started_playing_at = int(time.time())
 
         self._toggle_duration_counter(True)
+
+    def _update_play_time(self):
+        """Update the play time in the stats."""
+        if self.started_playing_at:
+            self.stats['play_time']['value'] += int(time.time()) - self.started_playing_at
+
+            self.started_playing_at = None
+
+    def _update_game_stats(self):
+        """Update the stats data after the game is over."""
+        if self.duration > self.stats['longest_game']['value']:
+            self.stats['longest_game']['value'] = self.duration
+
+        if self.duration < self.stats['shortest_game']['value'] or self.stats['shortest_game']['value'] == 0:
+            self.stats['shortest_game']['value'] = self.duration
+
+        self._update_play_time()
 
     def _toggle_duration_counter(self, enable=True):
         """Update the game duration counter event."""
@@ -103,6 +127,9 @@ class Game:
             self.state = settings.GameState.WON
 
             self._toggle_duration_counter(False)
+            self._update_game_stats()
+
+            self.stats['games_won']['value'] += 1
 
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
@@ -148,6 +175,9 @@ class Game:
             if self.state != settings.GameState.LOST:
                 save_game_manager.save_game(settings.SAVE_FILE_NAME, self, self.save_data)
 
+            self._update_play_time()
+            stats_manager.save_stats(settings.STATS_FILE_NAME, self.stats)
+
             pygame.quit()
             sys.exit()
 
@@ -168,6 +198,11 @@ class Game:
                 self.state = settings.GameState.LOST
 
                 self._toggle_duration_counter(False)
+                self._update_game_stats()
+
+                self.stats['games_lost']['value'] += 1
+
+                stats_manager.save_stats(settings.STATS_FILE_NAME, self.stats)
 
                 if os.path.isfile(settings.SAVE_FILE_NAME):
                     os.remove(settings.SAVE_FILE_NAME)
