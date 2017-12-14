@@ -149,9 +149,9 @@ class Field:
         self.images = images
         self.fonts = fonts
 
-        self.areas = self.width * self.height
+        self.areas_count = self.width * self.height
 
-        if self.mines > self.areas:
+        if self.mines > self.areas_count:
             raise ValueError('Not enough space for {} mines'.format(self.mines))
 
         self.field = []
@@ -216,7 +216,7 @@ class Field:
 
         for _ in range(0, self.mines):
             while True:
-                random_area_number = random.randint(0, self.areas - 1)
+                random_area_number = random.randint(0, self.areas_count - 1)
 
                 if random_area_number not in areas_with_mine:
                     areas_with_mine.append(random_area_number)

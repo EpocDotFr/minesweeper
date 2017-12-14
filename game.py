@@ -145,6 +145,12 @@ class Game:
 
             logging.info('Showing stats')
 
+    def _clear_surrounding_areas(self, area):
+        """Try to clear surrounding areas of a specific area."""
+        # TODO
+
+        self._check_win_condition()
+
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
         Also known as the game loop."""
@@ -222,6 +228,8 @@ class Game:
 
                 if os.path.isfile(settings.SAVE_FILE_NAME):
                     os.remove(settings.SAVE_FILE_NAME)
+            elif area.state == AreaState.CLEARED:
+                self._clear_surrounding_areas(area)
             else:
                 self._check_win_condition()
 
