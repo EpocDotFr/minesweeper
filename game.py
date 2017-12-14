@@ -135,9 +135,13 @@ class Game:
         if force is False or (force is None and self.state == settings.GameState.SHOW_STATS):
             self.state = settings.GameState.PLAYING
 
+            self._toggle_duration_counter(True)
+
             logging.info('Hiding stats')
         elif force is True or (force is None and self.state != settings.GameState.SHOW_STATS):
             self.state = settings.GameState.SHOW_STATS
+
+            self._toggle_duration_counter(False)
 
             logging.info('Showing stats')
 
