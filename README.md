@@ -2,7 +2,9 @@
 
 The [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) game, implemented in Python.
 
-> TODO Screenshot
+<p align="center">
+  <img src="https://raw.githubusercontent.com/EpocDotFr/minesweeper/master/screenshot.png">
+</p>
 
 ## Features
 
