@@ -131,6 +131,16 @@ class Game:
 
             self.stats['games_won']['value'] += 1
 
+    def _toggle_stats(self, force=None):
+        if force is False or (force is None and self.state == settings.GameState.SHOW_STATS):
+            self.state = settings.GameState.PLAYING
+
+            logging.info('Hiding stats')
+        elif force is True or (force is None and self.state != settings.GameState.SHOW_STATS):
+            self.state = settings.GameState.SHOW_STATS
+
+            logging.info('Showing stats')
+
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
         Also known as the game loop."""
@@ -160,6 +170,8 @@ class Game:
             self._draw_lost_screen()
         elif self.state == settings.GameState.WON:
             self._draw_won_screen()
+        elif self.state == settings.GameState.SHOW_STATS:
+            self._draw_stats_screen()
 
         # PyGame-related updates
         pygame.display.update()
@@ -237,6 +249,10 @@ class Game:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_F1:
                 self._start_new_game()
+
+                return True
+            elif event.key == pygame.K_F2:
+                self._toggle_stats()
 
                 return True
 
@@ -365,3 +381,39 @@ class Game:
         ]
 
         self._draw_fullscreen_window('All done!', lost_string)
+
+    def _draw_stats_screen(self):
+        """Draws the Stats screen."""
+        self._draw_fullscreen_transparent_background()
+
+        # Title
+        title_label = self.fonts['title'].render('Statistics', True, settings.TEXT_COLOR)
+        title_label_rect = title_label.get_rect()
+        title_label_rect.centerx = self.window_rect.centerx
+        title_label_rect.top = settings.INFO_PANEL_HEIGHT + 10
+
+        self.window.blit(title_label, title_label_rect)
+
+        # The stats themselves
+        spacing = title_label_rect.bottom + 30
+
+        for key, stat in self.stats.items():
+            # Stat label
+            stat_label = self.fonts['normal'].render(stat['name'], True, settings.TEXT_COLOR)
+            stat_label_rect = stat_label.get_rect()
+            stat_label_rect.left = self.window_rect.centerx - 200
+            stat_label_rect.top = spacing
+
+            self.window.blit(stat_label, stat_label_rect)
+
+            # Stat value
+            stat_value_format = stat['format'] if 'format' in stat else str
+
+            stat_value = self.fonts['normal'].render(stat_value_format(stat['value']), True, settings.TEXT_COLOR)
+            stat_value_rect = stat_value.get_rect()
+            stat_value_rect.right = self.window_rect.centerx + 200
+            stat_value_rect.top = spacing
+
+            self.window.blit(stat_value, stat_value_rect)
+
+            spacing += 35

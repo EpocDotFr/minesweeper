@@ -48,6 +48,7 @@ class GameState:
     PLAYING = 2
     LOST = 4
     WON = 8
+    SHOW_STATS = 16
 
 MOUSE_BUTTON_LEFT = 1
 MOUSE_BUTTON_RIGHT = 3
