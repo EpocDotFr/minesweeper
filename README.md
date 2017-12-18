@@ -13,7 +13,6 @@ The [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game)) game, 
   - Automatic game saving when quitting. If there's a saved game it is automatically loaded, too
   - Stats
   - Sound effects!
-  - Musics!
 
 ## Prerequisites
 
@@ -51,6 +50,7 @@ This task is performed by the `build_*` scripts to be run in the corresponding O
   - Icon by [Oliver Scholtz](https://www.iconfinder.com/icons/23906/mines_icon) (freeware)
   - Font by [Typodermic Fonts Inc](http://www.dafont.com/coolvetica.font) (freeware)
   - Graphics by [Kenney](https://kenney.nl/assets/topdown-tanks-redux) (CC0 1.0 Universal)
+  - Sound effects by [Freesfx.co.uk](http://www.freesfx.co.uk/) (© Freesfx.co.uk) and [Kenney](https://kenney.nl/assets/voiceover-pack) (CC0 1.0 Universal)
 
 ## End words
 

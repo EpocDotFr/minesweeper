@@ -5,6 +5,7 @@ import stats_manager
 import settings
 import logging
 import helpers
+import random
 import pygame
 import time
 import sys
@@ -37,6 +38,7 @@ class Game:
 
         self._load_fonts()
         self._load_images()
+        self._load_sounds()
 
         stats_manager.load_stats(settings.STATS_FILE_NAME, self.stats)
 
@@ -74,6 +76,21 @@ class Game:
             'mine_marker': helpers.load_image('mine_marker.png'),
             'mine_exploded': helpers.load_image('mine_exploded.png'),
             'mine': helpers.load_image('mine.png')
+        }
+
+    def _load_sounds(self):
+        """Load the sound effects."""
+        logging.info('Loading sounds')
+
+        self.sounds = {
+            'explosions': [
+                helpers.load_sound('explosion_1.wav', volume=settings.SOUNDS_VOLUME),
+                helpers.load_sound('explosion_2.wav', volume=settings.SOUNDS_VOLUME)
+            ],
+            'win': [
+                helpers.load_sound('win_1.ogg', volume=settings.SOUNDS_VOLUME),
+                helpers.load_sound('win_2.ogg', volume=settings.SOUNDS_VOLUME)
+            ]
         }
 
     def _start_new_game(self):
@@ -123,6 +140,8 @@ class Game:
         """Check if the player won the game."""
         if self.field.is_clear():
             logging.info('Game won')
+
+            random.choice(self.sounds['win']).play()
 
             self.state = settings.GameState.WON
 
@@ -215,6 +234,8 @@ class Game:
         if area.mark_as_clear():
             if area.state == AreaState.EXPLODED:
                 logging.info('Game lost')
+
+                random.choice(self.sounds['explosions']).play()
 
                 self.field.show_mines = True
                 self.state = settings.GameState.LOST
