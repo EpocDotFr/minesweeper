@@ -164,8 +164,8 @@ class Game:
 
             logging.info('Showing stats')
 
-    def _clear_surrounding_areas(self, area):
-        """Try to clear surrounding areas of a specific area."""
+    def _clear_surrounding_areas(self, coords):
+        """Try to clear surrounding areas of a specific are designated by its coordinates."""
         # TODO
 
         self._check_win_condition()
@@ -226,7 +226,7 @@ class Game:
 
     def _event_area_left_click(self, event):
         """Left click handler on an area."""
-        area = self._get_clicked_area(event, settings.MOUSE_BUTTON_LEFT)
+        area, coords = self._get_clicked_area(event, settings.MOUSE_BUTTON_LEFT)
 
         if not area:
             return False
@@ -250,7 +250,7 @@ class Game:
                 if os.path.isfile(settings.SAVE_FILE_NAME):
                     os.remove(settings.SAVE_FILE_NAME)
             elif area.state == AreaState.CLEARED:
-                self._clear_surrounding_areas(area)
+                self._clear_surrounding_areas(coords)
             else:
                 self._check_win_condition()
 
@@ -258,7 +258,7 @@ class Game:
 
     def _event_area_right_click(self, event):
         """Right click handler on an area."""
-        area = self._get_clicked_area(event, settings.MOUSE_BUTTON_RIGHT)
+        area, _ = self._get_clicked_area(event, settings.MOUSE_BUTTON_RIGHT)
 
         if not area:
             return False
@@ -296,12 +296,12 @@ class Game:
         if self.state != settings.GameState.PLAYING or event.type != pygame.MOUSEBUTTONUP or event.button != required_button:
             return False
 
-        for row in self.field.field:
-            for area in row:
+        for y, row in enumerate(self.field.field):
+            for x, area in enumerate(row):
                 if area.rect.collidepoint(event.pos):
-                    return area
+                    return area, (x, y)
 
-        return False
+        return False, False
 
     # --------------------------------------------------------------------------
     # Drawing handlers
