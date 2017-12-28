@@ -164,12 +164,6 @@ class Game:
 
             logging.info('Showing stats')
 
-    def _clear_surrounding_areas(self, coords):
-        """Try to clear surrounding areas of a specific are designated by its coordinates."""
-        # TODO
-
-        self._check_win_condition()
-
     def update(self):
         """Perform every updates of the game logic, events handling and drawing.
         Also known as the game loop."""
@@ -249,8 +243,9 @@ class Game:
 
                 if os.path.isfile(settings.SAVE_FILE_NAME):
                     os.remove(settings.SAVE_FILE_NAME)
-            elif area.state == AreaState.CLEARED:
-                self._clear_surrounding_areas(coords)
+            elif area.state == AreaState.CLEARED and area.nearby_mines_count == 0:
+                self.field.clear_surrounding_areas(coords)
+                self._check_win_condition()
             else:
                 self._check_win_condition()
 
@@ -294,7 +289,7 @@ class Game:
     def _get_clicked_area(self, event, required_button):
         """Return the area that was clicked."""
         if self.state != settings.GameState.PLAYING or event.type != pygame.MOUSEBUTTONUP or event.button != required_button:
-            return False
+            return False, False
 
         for y, row in enumerate(self.field.field):
             for x, area in enumerate(row):

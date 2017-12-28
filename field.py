@@ -210,6 +210,36 @@ class Field:
 
         return True
 
+    def clear_surrounding_areas(self, coords):
+        """Try to clear surrounding areas of a specific area designated by its coordinates."""
+        for direction in DIRECTIONS:
+            coords_x, coords_y = coords
+            dir_x, dir_y = direction
+
+            x = coords_x + dir_x
+            y = coords_y + dir_y
+
+            if self._are_coords_outside_field((x, y)):
+                continue
+
+            area = self.field[y][x]
+
+            if area.state == AreaState.INITIAL:
+                area.state = AreaState.CLEARED
+
+                if area.nearby_mines_count == 0:
+                    self.clear_surrounding_areas((x, y))
+
+    def _are_coords_outside_field(self, coords):
+        """Determine if the given coords are outside of the field."""
+        x = coords[0]
+        y = coords[1]
+
+        if x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1:
+            return True
+
+        return False
+
     def _generate_areas_with_mine(self):
         """Generate random mines position for the current field."""
         areas_with_mine = []
@@ -258,10 +288,7 @@ class Field:
                     nearby_x = x + dir_x
                     nearby_y = y + dir_y
 
-                    if nearby_x < 0 or nearby_x > self.width - 1:
-                        continue
-
-                    if nearby_y < 0 or nearby_y > self.height - 1:
+                    if self._are_coords_outside_field((nearby_x, nearby_y)):
                         continue
 
                     if self.field[nearby_y][nearby_x].has_mine:
