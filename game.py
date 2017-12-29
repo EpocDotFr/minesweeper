@@ -47,8 +47,6 @@ class Game:
 
             self.field.post_set_state(images=self.images, fonts=self.fonts)
 
-            print(self.field)
-
             self.state = settings.GameState.PLAYING
 
             self._toggle_duration_counter(True)
@@ -106,8 +104,6 @@ class Game:
             images=self.images,
             fonts=self.fonts
         )
-
-        print(self.field)
 
         self.duration = 0
         self.state = settings.GameState.PLAYING
