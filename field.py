@@ -232,8 +232,7 @@ class Field:
 
     def _are_coords_outside_field(self, coords):
         """Determine if the given coords are outside of the field."""
-        x = coords[0]
-        y = coords[1]
+        x, y = coords
 
         if x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1:
             return True
